@@ -1,0 +1,314 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider     = "postgresql"
+  url          = env("DATABASE_URL")
+  relationMode = "prisma"
+}
+
+// Model User utama
+model User {
+  id              String      @id @default(cuid())
+  name            String
+  email           String      @unique
+  phone           String?
+  password        String
+  role            UserRole    @default(PARENT)
+  province        String?
+  city            String?
+  address         String?     @db.Text
+  profileImage    String?
+  isActive        Boolean     @default(true)
+  emailVerified   DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Relations
+  children        Child[]
+  videoProgresses VideoProgress[]
+  testAttempts    TestAttempt[]
+  userAnswers     UserAnswer[]
+  notifications   Notification[]
+  
+  @@index([email])
+  @@index([role])
+}
+
+// Model untuk data anak
+model Child {
+  id              String      @id @default(cuid())
+  name            String      // Nama panggilan anak
+  fullName        String?     // Nama lengkap anak
+  dateOfBirth     DateTime
+  gender          Gender
+  isPremature     Boolean     @default(false)
+  birthWeight     Float?      // Berat lahir dalam kg
+  currentWeight   Float?      // Berat saat ini dalam kg
+  currentHeight   Float?      // Tinggi saat ini dalam cm
+  bloodType       String?
+  allergies       String[]    // Array alergi
+  medicalNotes    String?     @db.Text
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Foreign Keys
+  parentId        String
+  parent          User        @relation(fields: [parentId], references: [id], onDelete: Cascade)
+  
+  // Relations
+  healthRecords   HealthRecord[]
+  
+  @@index([parentId])
+}
+
+// Model untuk rekam kesehatan anak (opsional, untuk tracking)
+model HealthRecord {
+  id          String      @id @default(cuid())
+  recordType  RecordType  
+  value       String      // Nilai seperti berat, tinggi, dll
+  unit        String?     // Satuan
+  notes       String?     @db.Text
+  recordDate  DateTime    @default(now())
+  createdAt   DateTime    @default(now())
+  
+  // Foreign Keys
+  childId     String
+  child       Child       @relation(fields: [childId], references: [id], onDelete: Cascade)
+  
+  @@index([childId])
+  @@index([recordDate])
+}
+
+// Model kategori video edukasi
+model VideoCategory {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String?     @db.Text
+  icon        String?     // URL icon kategori
+  color       String?     // Warna theme kategori
+  order       Int         @default(0)
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  videos      Video[]
+  
+  @@index([order])
+}
+
+// Updated model Video di schema.prisma
+model Video {
+  id              String          @id @default(cuid())
+  title           String
+  description     String?         @db.Text
+  youtubeId       String          // ID video YouTube (contoh: "dQw4w9WgXcQ")
+  thumbnailUrl    String?         // Bisa ambil dari YouTube API atau manual
+  duration        Int?            // Durasi dalam detik
+  targetRole      UserRole[]      // Role yang bisa mengakses video ini
+  minAge          Int?            // Usia minimum anak (dalam bulan)
+  maxAge          Int?            // Usia maksimum anak (dalam bulan)
+  order           Int             @default(0)
+  isActive        Boolean         @default(true)
+  viewCount       Int             @default(0)
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Foreign Keys
+  categoryId      String
+  category        VideoCategory   @relation(fields: [categoryId], references: [id])
+  
+  // Relations
+  test            Test?           // Setiap video punya 1 test
+  videoProgresses VideoProgress[]
+  
+  @@index([categoryId])
+  @@index([targetRole])
+  @@index([order])
+  @@index([youtubeId])
+}
+
+// Model progress menonton video user
+model VideoProgress {
+  id              String      @id @default(cuid())
+  watchedDuration Int         @default(0) // Durasi yang sudah ditonton (detik)
+  isCompleted     Boolean     @default(false)
+  completedAt     DateTime?
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+  
+  // Foreign Keys
+  userId          String
+  videoId         String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  video           Video       @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, videoId])
+  @@index([userId])
+  @@index([videoId])
+}
+
+// Model test/kuis setelah video
+model Test {
+  id          String      @id @default(cuid())
+  title       String
+  description String?     @db.Text
+  timeLimit   Int?        // Waktu dalam menit (null = unlimited)
+  passingScore Int        @default(60) // Nilai minimum untuk lulus (%)
+  maxAttempts Int         @default(3) // Maksimal percobaan
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Foreign Keys  
+  videoId     String      @unique
+  video       Video       @relation(fields: [videoId], references: [id], onDelete: Cascade)
+  
+  // Relations
+  questions   Question[]
+  testAttempts TestAttempt[]
+  
+  @@index([videoId])
+}
+
+// Model soal dalam test
+model Question {
+  id              String          @id @default(cuid())
+  questionText    String          @db.Text
+  type            QuestionType    @default(MULTIPLE_CHOICE)
+  options         Json?           // Array pilihan untuk multiple choice
+  correctAnswer   String          // Jawaban benar
+  explanation     String?         @db.Text // Penjelasan jawaban
+  points          Int             @default(1) // Poin untuk soal ini
+  order           Int             @default(0)
+  imageUrl        String?         // Gambar pendukung soal
+  createdAt       DateTime        @default(now())
+  updatedAt       DateTime        @updatedAt
+  
+  // Foreign Keys
+  testId          String
+  test            Test            @relation(fields: [testId], references: [id], onDelete: Cascade)
+  
+  // Relations  
+  userAnswers     UserAnswer[]
+  
+  @@index([testId])
+  @@index([order])
+}
+
+// Model percobaan test oleh user
+model TestAttempt {
+  id          String          @id @default(cuid())
+  score       Int?            // Skor dalam persen
+  totalQuestions Int          // Total soal
+  correctAnswers Int          @default(0) // Jawaban benar
+  isPassed    Boolean         @default(false)
+  isCompleted Boolean         @default(false)
+  startedAt   DateTime        @default(now())
+  completedAt DateTime?
+  timeSpent   Int?            // Waktu yang dihabiskan (detik)
+  
+  // Foreign Keys
+  userId      String
+  testId      String
+  user        User            @relation(fields: [userId], references: [id], onDelete: Cascade)
+  test        Test            @relation(fields: [testId], references: [id], onDelete: Cascade)
+  
+  // Relations
+  userAnswers UserAnswer[]
+  
+  @@unique([userId, testId]) // User bisa coba lagi, tapi attempt baru
+  @@index([userId])
+  @@index([testId])
+}
+
+// Model jawaban user untuk setiap soal
+model UserAnswer {
+  id              String      @id @default(cuid())
+  answer          String      // Jawaban user
+  isCorrect       Boolean     @default(false)
+  points          Int         @default(0)
+  answeredAt      DateTime    @default(now())
+  
+  // Foreign Keys
+  userId          String
+  questionId      String  
+  testAttemptId   String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  question        Question    @relation(fields: [questionId], references: [id], onDelete: Cascade)
+  testAttempt     TestAttempt @relation(fields: [testAttemptId], references: [id], onDelete: Cascade)
+  
+  @@unique([testAttemptId, questionId]) // 1 jawaban per soal per attempt
+  @@index([userId])
+  @@index([questionId])
+  @@index([testAttemptId])
+}
+
+// Model untuk notifikasi
+model Notification {
+  id          String              @id @default(cuid())
+  title       String
+  message     String              @db.Text
+  type        NotificationType
+  isRead      Boolean             @default(false)
+  actionUrl   String?
+  createdAt   DateTime            @default(now())
+  
+  // Foreign Keys
+  userId      String
+  user        User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([userId])
+  @@index([isRead])
+  @@index([createdAt])
+}
+
+// Model untuk pengaturan aplikasi
+model AppSettings {
+  id          String      @id @default(cuid())
+  key         String      @unique
+  value       Json        // Fleksibel untuk berbagai tipe data
+  description String?
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+}
+
+// ENUMS
+enum UserRole {
+  ADMIN           // Admin dashboard
+  PARENT          // Ayah/Ibu
+  CAREGIVER       // Pengasuh
+  HEALTH_WORKER   // Bidan/Tenaga Kesehatan  
+  CADRE           // Kader
+}
+
+enum Gender {
+  MALE            // Laki-laki
+  FEMALE          // Perempuan
+}
+
+enum QuestionType {
+  MULTIPLE_CHOICE // Pilihan ganda
+  TRUE_FALSE      // Benar/Salah
+  ESSAY           // Essay (opsional)
+}
+
+enum RecordType {
+  WEIGHT          // Berat badan
+  HEIGHT          // Tinggi badan
+  HEAD_CIRCUMFERENCE // Lingkar kepala
+  VACCINATION     // Vaksinasi
+  ILLNESS         // Riwayat sakit
+  DEVELOPMENT     // Perkembangan
+  OTHER           // Lainnya
+}
+
+enum NotificationType {
+  SYSTEM          // Notifikasi sistem
+  REMINDER        // Pengingat
+  ACHIEVEMENT     // Pencapaian
+  TEST_RESULT     // Hasil test
+  NEW_CONTENT     // Konten baru
+}
