@@ -1,4 +1,4 @@
-// app/api/auth/login/route.ts
+// app/api/auth/login/route.ts (MODIFIED)
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
@@ -10,7 +10,7 @@ export async function POST(request: NextRequest) {
   try {
     const { email, password } = await request.json();
 
-    // Validasi input
+    // ... (kode validasi dan pencarian user yang sama) ...
     if (!email || !password) {
       return NextResponse.json(
         { error: "Email and password are required" },
@@ -30,9 +30,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Verifikasi password
+    // ... (kode verifikasi password yang sama) ...
     const isValidPassword = await bcrypt.compare(password, user.password);
-
     if (!isValidPassword) {
       return NextResponse.json(
         { error: "Invalid credentials" },
@@ -51,9 +50,11 @@ export async function POST(request: NextRequest) {
       { expiresIn: "7d" }
     );
 
-    // Buat response dengan cookie
+    // --- PERUBAHAN DI SINI ---
+    // Kembalikan token di body respons agar Flutter bisa membacanya
     const response = NextResponse.json({
       message: "Login successful",
+      token: token, // <--- TAMBAHKAN INI
       user: {
         id: user.id,
         name: user.name,
@@ -62,7 +63,7 @@ export async function POST(request: NextRequest) {
       },
     });
 
-    // Set HTTP-only cookie
+    // Set HTTP-only cookie (tetap jaga untuk aplikasi web jika ada)
     response.cookies.set("auth-token", token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === "production",

@@ -188,7 +188,7 @@ export default function DashboardLayout({
             </div>
             <div>
               <h1 className="text-lg font-semibold text-gray-900 dark:text-white">
-                EduAdmin
+                Si-Cegah Hebat
               </h1>
               <p className="text-xs text-gray-500 dark:text-gray-400">
                 Education Platform
@@ -317,7 +317,7 @@ export default function DashboardLayout({
 
               <div className="flex items-center space-x-2">
                 <h1 className="text-xl font-semibold text-gray-900 dark:text-white">
-                  Education Dashboard
+                  Si-Cegah Dashboard
                 </h1>
                 <span className="hidden sm:inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300">
                   Admin

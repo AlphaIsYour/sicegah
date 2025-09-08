@@ -4,7 +4,7 @@ import { prisma } from "@/lib/prisma";
 
 // Default settings
 const DEFAULT_SETTINGS = {
-  siteName: "Health Education Platform",
+  siteName: "Si Cegah App",
   siteDescription: "Platform edukasi kesehatan untuk orang tua dan kader",
   maxTestAttempts: 3,
   defaultPassingScore: 60,
