@@ -15,7 +15,7 @@ model User {
   email           String      @unique
   phone           String?
   password        String
-  role            UserRole    @default(PARENT)
+  role            UserRole    @default(BIDAN)
   province        String?
   city            String?
   address         String?     @db.Text
@@ -277,11 +277,13 @@ model AppSettings {
 
 // ENUMS
 enum UserRole {
-  ADMIN           // Admin dashboard
-  PARENT          // Ayah/Ibu
-  CAREGIVER       // Pengasuh
-  HEALTH_WORKER   // Bidan/Tenaga Kesehatan  
-  CADRE           // Kader
+  ADMIN           
+  AYAH           
+  IBU
+  PENGASUH
+  TENAGA_KESEHATAN
+  KADER
+  BIDAN
 }
 
 enum Gender {

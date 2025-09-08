@@ -199,11 +199,13 @@ export default function LoginPage() {
                 className="w-full px-3 py-2 text-black border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
                 disabled={isLoading}
               >
-                <option value="ADMIN">Admin</option>
-                <option value="PARENT">Parent</option>
-                <option value="CAREGIVER">Caregiver</option>
-                <option value="HEALTH_WORKER">Health Worker</option>
-                <option value="CADRE">Cadre</option>
+                <option value="ADMIN">ADMIN</option>
+                <option value="IBU">IBU</option>
+                <option value="AYAH">AYAH</option>
+                <option value="PENGASUH">PENGASUH</option>
+                <option value="TENAGA_KESEHATAN">TENAGAKESEHATAN</option>
+                <option value="KADER">KADER</option>
+                <option value="BIDAN">BIDAN</option>
               </select>
             </div>
           )}
