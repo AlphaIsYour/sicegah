@@ -19,10 +19,12 @@ export default function TestSettings({
 }: TestSettingsProps) {
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Test Settings</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        Test Settings
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Max Test Attempts
           </label>
           <input
@@ -36,14 +38,14 @@ export default function TestSettings({
                 maxTestAttempts: Math.max(1, parseInt(e.target.value) || 1),
               })
             }
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Maximum number of attempts allowed per test
           </p>
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Default Passing Score (%)
           </label>
           <input
@@ -60,18 +62,18 @@ export default function TestSettings({
                 ),
               })
             }
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-700 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
-          <p className="text-sm text-gray-500 mt-1">
+          <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
             Default minimum score required to pass tests
           </p>
         </div>
       </div>
-      <div className="bg-yellow-50 border border-yellow-200 rounded-md p-4">
+      <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900 rounded-md p-4">
         <div className="flex">
           <div className="flex-shrink-0">
             <svg
-              className="h-5 w-5 text-yellow-400"
+              className="h-5 w-5 text-blue-400 dark:text-blue-300"
               viewBox="0 0 20 20"
               fill="currentColor"
             >
@@ -83,10 +85,10 @@ export default function TestSettings({
             </svg>
           </div>
           <div className="ml-3">
-            <h3 className="text-sm font-medium text-yellow-800">
+            <h3 className="text-sm font-medium text-blue-800 dark:text-blue-200">
               Important Note
             </h3>
-            <div className="mt-2 text-sm text-yellow-700">
+            <div className="mt-2 text-sm text-blue-700 dark:text-blue-300">
               <p>
                 Changes to test settings will only apply to new tests created
                 after saving. Existing tests will retain their current settings.

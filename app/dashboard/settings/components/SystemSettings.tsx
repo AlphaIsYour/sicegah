@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+"use client";
+
+import { useState, useEffect } from "react";
+
 interface AppSettings {
   siteName: string;
   siteDescription: string;
@@ -31,10 +36,10 @@ export default function SystemSettings({
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
         enabled
           ? variant === "danger"
-            ? "bg-red-600"
-            : "bg-blue-600"
-          : "bg-gray-200"
-      }`}
+            ? "bg-red-600 dark:bg-red-500"
+            : "bg-blue-600 dark:bg-blue-500"
+          : "bg-gray-200 dark:bg-gray-600"
+      } focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-offset-gray-900`}
     >
       <span
         className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
@@ -46,14 +51,16 @@ export default function SystemSettings({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">System Settings</h2>
+      <h2 className="text-xl font-semibold text-gray-900 dark:text-white">
+        System Settings
+      </h2>
       <div className="space-y-6">
-        <div className="flex items-center justify-between py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between py-4 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h3 className="text-sm font-medium text-gray-900">
+            <h3 className="text-base font-medium text-gray-900 dark:text-white">
               Maintenance Mode
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Enable maintenance mode to temporarily disable user access
             </p>
           </div>
@@ -70,11 +77,11 @@ export default function SystemSettings({
         </div>
 
         {settings.systemMaintenance && (
-          <div className="bg-red-50 border border-red-200 rounded-md p-4">
+          <div className="bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-900 rounded-md p-4">
             <div className="flex">
               <div className="flex-shrink-0">
                 <svg
-                  className="h-5 w-5 text-red-400"
+                  className="h-5 w-5 text-red-400 dark:text-red-300"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                 >
@@ -86,10 +93,10 @@ export default function SystemSettings({
                 </svg>
               </div>
               <div className="ml-3">
-                <h3 className="text-sm font-medium text-red-800">
+                <h3 className="text-sm font-medium text-red-800 dark:text-red-300">
                   Maintenance Mode Active
                 </h3>
-                <div className="mt-2 text-sm text-red-700">
+                <div className="mt-2 text-sm text-red-700 dark:text-red-400">
                   <p>
                     The system is currently in maintenance mode. Regular users
                     cannot access the application. Only administrators can
@@ -101,22 +108,26 @@ export default function SystemSettings({
           </div>
         )}
 
-        <div className="bg-gray-50 border border-gray-200 rounded-md p-4">
-          <h3 className="text-sm font-medium text-gray-900 mb-3">
+        <div className="bg-gray-50 dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-md p-4">
+          <h3 className="text-base font-medium text-gray-900 dark:text-white mb-3">
             System Information
           </h3>
-          <div className="space-y-2 text-sm text-gray-600">
+          <div className="space-y-2 text-sm text-gray-600 dark:text-gray-300">
             <div className="flex justify-between">
               <span>Platform Version:</span>
-              <span className="font-medium">v1.0.0</span>
+              <span className="font-medium text-gray-800 dark:text-gray-200">
+                v1.0.0
+              </span>
             </div>
             <div className="flex justify-between">
               <span>Database Status:</span>
-              <span className="text-green-600 font-medium">Connected</span>
+              <span className="text-green-600 dark:text-green-400 font-medium">
+                Connected
+              </span>
             </div>
             <div className="flex justify-between">
               <span>Last Backup:</span>
-              <span className="font-medium">
+              <span className="font-medium text-gray-800 dark:text-gray-200">
                 {new Date().toLocaleDateString()}
               </span>
             </div>

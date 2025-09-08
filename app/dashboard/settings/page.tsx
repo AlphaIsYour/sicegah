@@ -74,22 +74,26 @@ export default function SettingsPage() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center min-h-screen">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50 dark:bg-gray-900">
         <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-blue-600"></div>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 px-4 sm:px-6 lg:px-8 py-8">
       <div>
-        <h1 className="text-3xl font-bold text-gray-900">Settings</h1>
-        <p className="text-gray-600 mt-2">Kelola pengaturan aplikasi</p>
+        <h1 className="text-3xl font-bold text-gray-900 dark:text-white">
+          Settings
+        </h1>
+        <p className="text-gray-600 dark:text-gray-400 mt-2">
+          Kelola pengaturan aplikasi
+        </p>
       </div>
 
       <SettingsTabs activeTab={activeTab} setActiveTab={setActiveTab} />
 
-      <div className="bg-white rounded-lg shadow-sm p-6 border">
+      <div className="bg-white dark:bg-gray-800 rounded-lg shadow-sm p-6 border border-gray-200 dark:border-gray-700">
         {activeTab === "general" && (
           <GeneralSettings settings={settings} setSettings={setSettings} />
         )}
@@ -106,21 +110,21 @@ export default function SettingsPage() {
           <SystemSettings settings={settings} setSettings={setSettings} />
         )}
 
-        <div className="pt-6 border-t flex items-center justify-between">
+        <div className="pt-6 mt-6 border-t border-gray-200 dark:border-gray-700 flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
           <button
             onClick={handleSave}
             disabled={saving}
-            className="flex items-center bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50"
+            className="flex items-center bg-blue-600 text-white px-5 py-2.5 rounded-md hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 dark:focus:ring-offset-gray-800"
           >
             {saving ? (
-              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+              <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-3"></div>
             ) : null}
-            {saving ? "Saving..." : "Save Changes"}
+            {saving ? "Saving Changes..." : "Save Changes"}
           </button>
 
           {saved && (
-            <div className="flex items-center text-green-600">
-              <CheckCircle size={20} className="mr-2" />
+            <div className="flex items-center text-green-600 dark:text-green-500 text-sm">
+              <CheckCircle size={20} weight="bold" className="mr-2" />
               Settings saved successfully
             </div>
           )}

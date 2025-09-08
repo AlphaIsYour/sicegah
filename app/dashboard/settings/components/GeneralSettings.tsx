@@ -19,10 +19,12 @@ export default function GeneralSettings({
 }: GeneralSettingsProps) {
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">General Settings</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        General Settings
+      </h2>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Site Name
           </label>
           <input
@@ -31,11 +33,11 @@ export default function GeneralSettings({
             onChange={(e) =>
               setSettings({ ...settings, siteName: e.target.value })
             }
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           />
         </div>
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-2">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
             Registration Status
           </label>
           <select
@@ -46,7 +48,7 @@ export default function GeneralSettings({
                 registrationOpen: e.target.value === "open",
               })
             }
-            className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+            className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
           >
             <option value="open">Open</option>
             <option value="closed">Closed</option>
@@ -54,7 +56,7 @@ export default function GeneralSettings({
         </div>
       </div>
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Site Description
         </label>
         <textarea
@@ -63,7 +65,7 @@ export default function GeneralSettings({
             setSettings({ ...settings, siteDescription: e.target.value })
           }
           rows={3}
-          className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="w-full border border-gray-300 dark:border-gray-700 bg-white dark:bg-gray-800 text-gray-900 dark:text-white rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
       </div>
     </div>

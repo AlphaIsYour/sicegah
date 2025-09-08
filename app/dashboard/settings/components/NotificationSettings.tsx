@@ -1,3 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+"use client";
+
+import { useState, useEffect } from "react";
+
 interface AppSettings {
   siteName: string;
   siteDescription: string;
@@ -27,7 +32,9 @@ export default function NotificationSettings({
     <button
       onClick={onChange}
       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
-        enabled ? "bg-blue-600" : "bg-gray-200"
+        enabled
+          ? "bg-blue-600 dark:bg-blue-500"
+          : "bg-gray-200 dark:bg-gray-600"
       }`}
     >
       <span
@@ -40,14 +47,16 @@ export default function NotificationSettings({
 
   return (
     <div className="space-y-6">
-      <h2 className="text-lg font-semibold">Notification Settings</h2>
+      <h2 className="text-lg font-semibold text-gray-900 dark:text-white">
+        Notification Settings
+      </h2>
       <div className="space-y-6">
-        <div className="flex items-center justify-between py-4 border-b border-gray-200">
+        <div className="flex items-center justify-between py-4 border-b border-gray-200 dark:border-gray-700">
           <div>
-            <h3 className="text-sm font-medium text-gray-900">
+            <h3 className="text-sm font-medium text-gray-900 dark:text-white">
               Email Notifications
             </h3>
-            <p className="text-sm text-gray-500">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               Send email notifications to users for important updates
             </p>
           </div>
@@ -62,11 +71,11 @@ export default function NotificationSettings({
           />
         </div>
 
-        <div className="bg-blue-50 border border-blue-200 rounded-md p-4">
+        <div className="bg-blue-50 dark:bg-blue-900/20 border border-blue-200 dark:border-blue-900 rounded-md p-4">
           <div className="flex">
             <div className="flex-shrink-0">
               <svg
-                className="h-5 w-5 text-blue-400"
+                className="h-5 w-5 text-blue-400 dark:text-blue-300"
                 viewBox="0 0 20 20"
                 fill="currentColor"
               >
@@ -78,10 +87,10 @@ export default function NotificationSettings({
               </svg>
             </div>
             <div className="ml-3">
-              <h3 className="text-sm font-medium text-blue-800">
+              <h3 className="text-sm font-medium text-blue-800 dark:text-blue-300">
                 Email Configuration Required
               </h3>
-              <div className="mt-2 text-sm text-blue-700">
+              <div className="mt-2 text-sm text-blue-700 dark:text-blue-400">
                 <p>
                   To enable email notifications, make sure your SMTP settings
                   are configured in your environment variables.

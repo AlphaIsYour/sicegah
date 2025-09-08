@@ -7,11 +7,12 @@ const prisma = new PrismaClient();
 // GET /api/video-categories/[id]
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const category = await prisma.videoCategory.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         videos: {
           select: {
@@ -48,14 +49,15 @@ export async function GET(
 // PUT /api/video-categories/[id]
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const { name, description, icon, color, order, isActive } = body;
 
     const category = await prisma.videoCategory.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         name,
         description,
@@ -79,12 +81,13 @@ export async function PUT(
 // DELETE /api/video-categories/[id]
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check if category has videos
     const videosCount = await prisma.video.count({
-      where: { categoryId: params.id },
+      where: { categoryId: id },
     });
 
     if (videosCount > 0) {
@@ -97,7 +100,7 @@ export async function DELETE(
     }
 
     await prisma.videoCategory.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Category deleted successfully" });

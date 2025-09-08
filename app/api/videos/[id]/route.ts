@@ -7,11 +7,12 @@ const prisma = new PrismaClient();
 // GET /api/videos/[id]
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const video = await prisma.video.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         category: {
           select: {
@@ -59,9 +60,10 @@ export async function GET(
 // PUT /api/videos/[id]
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const {
       title,
@@ -74,7 +76,7 @@ export async function PUT(
     } = body;
 
     const video = await prisma.video.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         description,
@@ -114,11 +116,12 @@ export async function PUT(
 // DELETE /api/videos/[id]
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.video.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Video deleted successfully" });

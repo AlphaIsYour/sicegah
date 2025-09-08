@@ -6,9 +6,10 @@ const prisma = new PrismaClient();
 // PUT /api/tests/[id]
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const {
       title,
@@ -20,7 +21,7 @@ export async function PUT(
     } = body;
 
     const test = await prisma.test.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         title,
         description,
@@ -57,12 +58,13 @@ export async function PUT(
 // DELETE /api/tests/[id]
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     // Check if test has questions
     const questionsCount = await prisma.question.count({
-      where: { testId: params.id },
+      where: { testId: id },
     });
 
     if (questionsCount > 0) {
@@ -75,7 +77,7 @@ export async function DELETE(
     }
 
     await prisma.test.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Test deleted successfully" });

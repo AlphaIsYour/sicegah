@@ -33,7 +33,6 @@ const menuItems = [
     href: "/dashboard/users",
     label: "Users",
     icon: Users,
-    badge: "24",
   },
   {
     href: "/dashboard/videos",
@@ -51,7 +50,6 @@ const menuItems = [
     href: "/dashboard/questions",
     label: "Questions",
     icon: Question,
-    badge: "12",
   },
   {
     href: "/dashboard/tests",
@@ -218,7 +216,7 @@ export default function DashboardLayout({
                 onClick={() => setSidebarOpen(false)}
                 className={`group flex items-center justify-between px-3 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 ${
                   isActive
-                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 border-r-2 border-blue-600"
+                    ? "bg-blue-50 dark:bg-blue-900/20 text-blue-700 dark:text-blue-300 "
                     : "text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white"
                 }`}
               >
@@ -234,11 +232,11 @@ export default function DashboardLayout({
                   />
                   {item.label}
                 </div>
-                {item.badge && (
+                {/* {item.badge && (
                   <span className="inline-flex items-center justify-center px-2 py-0.5 text-xs font-medium bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 rounded-full">
                     {item.badge}
                   </span>
-                )}
+                )} */}
               </Link>
             );
           })}
@@ -247,7 +245,7 @@ export default function DashboardLayout({
         {/* User Info & Actions */}
         <div className="border-t border-gray-200 dark:border-gray-700 p-4 space-y-3">
           {/* Theme Toggle */}
-          <button
+          {/* <button
             onClick={toggleTheme}
             className="w-full flex items-center px-3 py-2 text-sm text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors group"
           >
@@ -263,7 +261,7 @@ export default function DashboardLayout({
               />
             )}
             {isDarkMode ? "Light Mode" : "Dark Mode"}
-          </button>
+          </button> */}
 
           {/* User Info */}
           <div className="flex items-center space-x-3 p-3 bg-gray-50 dark:bg-gray-700 rounded-lg">
@@ -299,7 +297,7 @@ export default function DashboardLayout({
       {/* Mobile sidebar overlay */}
       {sidebarOpen && (
         <div
-          className="fixed inset-0 bg-black bg-opacity-50 z-40 lg:hidden"
+          className="fixed inset-0 bg-black/40 bg-opacity-50 z-40 lg:hidden"
           onClick={() => setSidebarOpen(false)}
         />
       )}

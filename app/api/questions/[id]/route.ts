@@ -6,11 +6,12 @@ const prisma = new PrismaClient();
 // GET /api/questions/[id]
 export async function GET(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const question = await prisma.question.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         test: {
           select: {
@@ -45,9 +46,10 @@ export async function GET(
 // PUT /api/questions/[id]
 export async function PUT(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const body = await request.json();
     const {
       questionText,
@@ -60,7 +62,7 @@ export async function PUT(
     } = body;
 
     const question = await prisma.question.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         questionText,
         type,
@@ -97,11 +99,12 @@ export async function PUT(
 // DELETE /api/questions/[id]
 export async function DELETE(
   request: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     await prisma.question.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({ message: "Question deleted successfully" });
