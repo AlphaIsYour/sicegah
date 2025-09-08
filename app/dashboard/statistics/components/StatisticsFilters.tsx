@@ -30,10 +30,13 @@ export default function StatisticsFilters({
         className="px-4 py-2 border border-gray-300 dark:border-gray-700 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800 text-gray-900 dark:text-white"
       >
         <option value="ALL">All Roles</option>
-        <option value="PARENT">Parents</option>
-        <option value="HEALTH_WORKER">Health Workers</option>
-        <option value="CAREGIVER">Caregivers</option>
-        <option value="CADRE">Cadres</option>
+        <option value="ADMIN">ADMIN</option>
+        <option value="IBU">IBU</option>
+        <option value="AYAH">AYAH</option>
+        <option value="PENGASUH">PENGASUH</option>
+        <option value="TENAGA_KESEHATAN">TENAGAKESEHATAN</option>
+        <option value="KADER">KADER</option>
+        <option value="BIDAN">BIDAN</option>
       </select>
     </div>
   );

@@ -219,7 +219,14 @@ export default function VideoModal({
               Target Roles
             </label>
             <div className="grid grid-cols-2 gap-2">
-              {["PARENT", "HEALTH_WORKER", "CAREGIVER", "CADRE"].map((role) => (
+              {[
+                "IBU",
+                "AYAH",
+                "PENGASUH",
+                "KADER",
+                "TENAGA_KESEHATAN",
+                "BIDAN",
+              ].map((role) => (
                 <label key={role} className="flex items-center">
                   <input
                     type="checkbox"

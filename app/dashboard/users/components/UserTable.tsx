@@ -28,12 +28,15 @@ export default function UserTable({
   onDelete,
 }: UserTableProps) {
   const roleColors = {
-    PARENT: "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300",
-    HEALTH_WORKER:
-      "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300",
-    CAREGIVER:
+    AYAH: "bg-blue-100 dark:bg-blue-900/20 text-blue-800 dark:text-blue-300",
+    IBU: "bg-green-100 dark:bg-green-900/20 text-green-800 dark:text-green-300",
+    BIDAN:
       "bg-purple-100 dark:bg-purple-900/20 text-purple-800 dark:text-purple-300",
-    CADRE:
+    KADER:
+      "bg-yellow-100 dark:bg-yellow-900/20 text-yellow-800 dark:text-yellow-300",
+    PENGASUH:
+      "bg-teal-100 dark:bg-teal-900/20 text-teal-800 dark:text-teal-300",
+    TENAGA_KESEHATAN:
       "bg-orange-100 dark:bg-orange-900/20 text-orange-800 dark:text-orange-300",
     ADMIN: "bg-red-100 dark:bg-red-900/20 text-red-800 dark:text-red-300",
   };
