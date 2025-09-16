@@ -40,9 +40,10 @@ async function checkChildOwnership(childId: string, userId: string) {
 // GET - Ambil detail data anak berdasarkan ID
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = verifyToken(request);
     if (!user) {
       return NextResponse.json(
@@ -51,7 +52,7 @@ export async function GET(
       );
     }
 
-    const child = await checkChildOwnership(params.id, user.id);
+    const child = await checkChildOwnership(id, user.id);
     if (!child) {
       return NextResponse.json(
         {
@@ -64,7 +65,7 @@ export async function GET(
 
     // Ambil data lengkap dengan health records
     const childDetail = await prisma.child.findUnique({
-      where: { id: params.id },
+      where: { id },
       include: {
         healthRecords: {
           orderBy: {
@@ -95,9 +96,10 @@ export async function GET(
 // PUT - Update data anak berdasarkan ID
 export async function PUT(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = verifyToken(request);
     if (!user) {
       return NextResponse.json(
@@ -106,7 +108,7 @@ export async function PUT(
       );
     }
 
-    const existingChild = await checkChildOwnership(params.id, user.id);
+    const existingChild = await checkChildOwnership(id, user.id);
     if (!existingChild) {
       return NextResponse.json(
         {
@@ -170,7 +172,7 @@ export async function PUT(
     }
 
     const updatedChild = await prisma.child.update({
-      where: { id: params.id },
+      where: { id },
       data: {
         ...(name && { name }),
         ...(fullName !== undefined && { fullName }),
@@ -215,9 +217,10 @@ export async function PUT(
 // DELETE - Hapus data anak berdasarkan ID
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    const { id } = await params;
     const user = verifyToken(request);
     if (!user) {
       return NextResponse.json(
@@ -226,7 +229,7 @@ export async function DELETE(
       );
     }
 
-    const existingChild = await checkChildOwnership(params.id, user.id);
+    const existingChild = await checkChildOwnership(id, user.id);
     if (!existingChild) {
       return NextResponse.json(
         {
@@ -238,7 +241,7 @@ export async function DELETE(
     }
 
     await prisma.child.delete({
-      where: { id: params.id },
+      where: { id },
     });
 
     return NextResponse.json({
