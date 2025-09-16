@@ -26,6 +26,30 @@ function verifyToken(request: NextRequest) {
   }
 }
 
+// Tambahkan ini di route.ts sebelum export async function GET
+export async function OPTIONS(request: NextRequest) {
+  // Endpoint test tanpa auth - hapus setelah testing
+  try {
+    const children = await prisma.child.findMany({
+      take: 5,
+      orderBy: { createdAt: "desc" },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Test endpoint works",
+      data: children,
+      count: children.length,
+    });
+  } catch (error) {
+    return NextResponse.json({
+      success: false,
+      error: "Database connection failed",
+      details: error,
+    });
+  }
+}
+
 // GET - Ambil semua data anak milik user
 export async function GET(request: NextRequest) {
   try {
