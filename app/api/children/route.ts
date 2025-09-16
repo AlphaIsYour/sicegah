@@ -20,7 +20,10 @@ function verifyToken(request: NextRequest) {
       token,
       process.env.JWT_SECRET || "your-secret-key"
     ) as any;
-    return decoded;
+    return {
+      ...decoded,
+      id: decoded.id || decoded.userId,
+    };
   } catch (error) {
     return null;
   }
