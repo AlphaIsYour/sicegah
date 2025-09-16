@@ -79,6 +79,7 @@ export async function PUT(request: NextRequest) {
       data: {
         name: body.name,
         phone: body.phone,
+        role: body.role,
         province: body.province,
         city: body.city,
         address: body.address,
