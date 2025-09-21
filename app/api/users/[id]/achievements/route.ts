@@ -1,4 +1,4 @@
-// app/api/users/[userId]/achievements/route.ts
+// app/api/users/[id]/achievements/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
@@ -6,14 +6,14 @@ const prisma = new PrismaClient();
 
 export async function GET(
   request: NextRequest,
-  { params }: { params: Promise<{ userId: string }> }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    const { userId } = await params;
+    const { id } = await params;
 
     // Get user achievements
     const userAchievements = await prisma.userAchievement.findMany({
-      where: { userId },
+      where: { userId: id },
       include: {
         achievement: true,
       },
@@ -23,14 +23,14 @@ export async function GET(
     // Get user stats
     const completedTests = await prisma.testAttempt.count({
       where: {
-        userId,
+        userId: id,
         isCompleted: true,
       },
     });
 
     const perfectScores = await prisma.testAttempt.count({
       where: {
-        userId,
+        userId: id,
         isCompleted: true,
         score: 100,
       },
@@ -38,7 +38,7 @@ export async function GET(
 
     const totalStars = await prisma.testAttempt.aggregate({
       where: {
-        userId,
+        userId: id,
         isCompleted: true,
       },
       _sum: {
