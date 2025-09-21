@@ -1,6 +1,5 @@
-// app/api/test-attempts/[attemptId]/complete/route.ts
-// PUT /api/test-attempts/[attemptId]/complete - Menyelesaikan test dan hitung score
-
+/* eslint-disable @typescript-eslint/no-unused-vars */
+// app/api/test-attempts/[attemptId]/complete/route.ts - UPDATE DENGAN GAMIFIKASI
 import { NextRequest, NextResponse } from "next/server";
 import { PrismaClient } from "@prisma/client";
 
@@ -13,7 +12,7 @@ export async function PUT(
   try {
     const { attemptId } = await params;
     const body = await request.json();
-    const { userId } = body; // Untuk validasi ownership
+    const { userId } = body;
 
     if (!attemptId) {
       return NextResponse.json(
@@ -22,122 +21,105 @@ export async function PUT(
       );
     }
 
-    // Ambil data test attempt dengan relasi yang diperlukan
     const testAttempt = await prisma.testAttempt.findUnique({
       where: { id: attemptId },
       include: {
-        test: {
-          include: {
-            questions: true,
-          },
-        },
+        test: { include: { questions: true } },
         userAnswers: true,
       },
     });
 
-    if (!testAttempt) {
+    if (!testAttempt || testAttempt.isCompleted) {
       return NextResponse.json(
-        { error: "Test attempt not found" },
-        { status: 404 }
-      );
-    }
-
-    if (testAttempt.isCompleted) {
-      return NextResponse.json(
-        { error: "Test attempt already completed" },
+        { error: "Test attempt not found or already completed" },
         { status: 400 }
       );
     }
 
-    if (userId && testAttempt.userId !== userId) {
-      return NextResponse.json(
-        { error: "Unauthorized access to test attempt" },
-        { status: 403 }
-      );
-    }
-
-    // Hitung total points yang diperoleh
-    const totalPointsEarned = testAttempt.userAnswers.reduce((sum, answer) => {
-      return sum + answer.points;
-    }, 0);
-
-    // Hitung total points maksimum
-    const totalMaxPoints = testAttempt.test.questions.reduce(
-      (sum, question) => {
-        return sum + question.points;
-      },
+    // Hitung scoring
+    const totalPointsEarned = testAttempt.userAnswers.reduce(
+      (sum, answer) => sum + answer.points,
       0
     );
-
-    // Hitung score persentase
+    const totalMaxPoints = testAttempt.test.questions.reduce(
+      (sum, question) => sum + question.points,
+      0
+    );
     const score =
       totalMaxPoints > 0
         ? Math.round((totalPointsEarned / totalMaxPoints) * 100)
         : 0;
+    const correctAnswersCount = testAttempt.userAnswers.filter(
+      (answer) => answer.isCorrect
+    ).length;
 
-    // Tentukan apakah lulus berdasarkan passing score
+    // ⭐ HITUNG STAR RATING (1-5 bintang berdasarkan jawaban benar)
+    const starRating = Math.round(
+      (correctAnswersCount / testAttempt.test.questions.length) * 5
+    );
+
     const isPassed = score >= testAttempt.test.passingScore;
-
-    // Hitung waktu yang dihabiskan
     const timeSpent = Math.floor(
       (new Date().getTime() - testAttempt.startedAt.getTime()) / 1000
     );
 
-    // Update test attempt
+    // Update test attempt dengan star rating
     const completedAttempt = await prisma.testAttempt.update({
       where: { id: attemptId },
       data: {
         score,
-        correctAnswers: testAttempt.userAnswers.filter(
-          (answer) => answer.isCorrect
-        ).length,
+        correctAnswers: correctAnswersCount,
+        starRating, // ⭐ TAMBAHAN STAR RATING
         isPassed,
         isCompleted: true,
         completedAt: new Date(),
         timeSpent,
       },
-      include: {
-        test: {
-          select: {
-            title: true,
-            passingScore: true,
-            video: {
-              select: {
-                title: true,
-              },
-            },
-          },
-        },
-        userAnswers: {
-          include: {
-            question: {
-              select: {
-                questionText: true,
-                correctAnswer: true,
-                explanation: true,
-                points: true,
-              },
-            },
-          },
-        },
-      },
     });
 
-    // Buat notifikasi hasil test
+    // ⭐ GAMIFIKASI: Check dan unlock achievements
+    const achievementsUnlocked = [];
+
+    // 1. First Test Achievement
+    const completedTestsCount = await prisma.testAttempt.count({
+      where: { userId: testAttempt.userId, isCompleted: true },
+    });
+
+    if (completedTestsCount === 1) {
+      await unlockAchievement(testAttempt.userId, "First Test Completed");
+      achievementsUnlocked.push("First Test Completed");
+    }
+
+    // 2. Learning Champion (5 tests)
+    if (completedTestsCount === 5) {
+      await unlockAchievement(testAttempt.userId, "Learning Champion");
+      achievementsUnlocked.push("Learning Champion");
+    }
+
+    // 3. Perfect Score Achievement
+    if (score === 100) {
+      await unlockAchievement(testAttempt.userId, "Perfect Score");
+      achievementsUnlocked.push("Perfect Score");
+    }
+
+    // 4. Dedicated Learner (10 tests)
+    if (completedTestsCount === 10) {
+      await unlockAchievement(testAttempt.userId, "Dedicated Learner");
+      achievementsUnlocked.push("Dedicated Learner");
+    }
+
+    // Create notification
     await prisma.notification.create({
       data: {
         userId: testAttempt.userId,
         title: isPassed ? "Test Passed!" : "Test Completed",
-        message: `You ${isPassed ? "passed" : "completed"} the test "${
-          testAttempt.test.title
-        }" with score ${score}%`,
+        message: `You ${
+          isPassed ? "passed" : "completed"
+        } the test with score ${score}% (${starRating} ⭐)`,
         type: "TEST_RESULT",
         actionUrl: `/test-results/${attemptId}`,
       },
     });
-
-    // Jika lulus dan ini video dengan test, mungkin bisa unlock konten selanjutnya
-    // (implementasi bisa disesuaikan dengan business logic)
 
     return NextResponse.json({
       success: true,
@@ -145,16 +127,16 @@ export async function PUT(
         attempt: completedAttempt,
         summary: {
           score,
+          starRating, // ⭐ RETURN STAR RATING
           isPassed,
           totalQuestions: testAttempt.totalQuestions,
-          correctAnswers: testAttempt.userAnswers.filter(
-            (answer) => answer.isCorrect
-          ).length,
+          correctAnswers: correctAnswersCount,
           totalPointsEarned,
           totalMaxPoints,
           timeSpent,
           passingScore: testAttempt.test.passingScore,
         },
+        achievementsUnlocked, // ⭐ RETURN UNLOCKED ACHIEVEMENTS
       },
     });
   } catch (error) {
@@ -168,15 +150,36 @@ export async function PUT(
   }
 }
 
-// Jika Anda juga ingin mendukung method lain, tambahkan di sini
-export async function GET() {
-  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
-}
+// ⭐ HELPER FUNCTION: Unlock Achievement
+async function unlockAchievement(userId: string, achievementName: string) {
+  try {
+    const achievement = await prisma.achievement.findUnique({
+      where: { name: achievementName },
+    });
 
-export async function POST() {
-  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
-}
+    if (!achievement) return;
 
-export async function DELETE() {
-  return NextResponse.json({ error: "Method not allowed" }, { status: 405 });
+    // Check if already unlocked
+    const existingAchievement = await prisma.userAchievement.findUnique({
+      where: {
+        userId_achievementId: {
+          userId,
+          achievementId: achievement.id,
+        },
+      },
+    });
+
+    if (!existingAchievement) {
+      await prisma.userAchievement.create({
+        data: {
+          userId,
+          achievementId: achievement.id,
+          isCompleted: true,
+          progress: achievement.requirement || 0,
+        },
+      });
+    }
+  } catch (error) {
+    console.error("Error unlocking achievement:", error);
+  }
 }

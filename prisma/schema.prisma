@@ -22,8 +22,8 @@ model User {
   profileImage    String?
   isActive        Boolean     @default(true)
   emailVerified   DateTime?
-  resetToken      String?     // Token untuk reset password
-  resetTokenExpiry DateTime?  // Waktu expired token
+  resetToken      String?
+  resetTokenExpiry DateTime?
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   
@@ -33,12 +33,12 @@ model User {
   testAttempts    TestAttempt[]
   userAnswers     UserAnswer[]
   notifications   Notification[]
+  achievements    UserAchievement[]  // ⭐ TAMBAHAN BARU
   
   @@index([email])
   @@index([role])
   @@index([resetToken])
 }
-
 // Model untuk data anak
 model Child {
   id              String      @id @default(cuid())
@@ -204,14 +204,15 @@ model Question {
 // Model percobaan test oleh user
 model TestAttempt {
   id          String          @id @default(cuid())
-  score       Int?            // Skor dalam persen
-  totalQuestions Int          // Total soal
-  correctAnswers Int          @default(0) // Jawaban benar
+  score       Int?
+  totalQuestions Int
+  correctAnswers Int          @default(0)
+  starRating  Int?            @default(0) // ⭐ TAMBAHAN: 0-5 bintang
   isPassed    Boolean         @default(false)
   isCompleted Boolean         @default(false)
   startedAt   DateTime        @default(now())
   completedAt DateTime?
-  timeSpent   Int?            // Waktu yang dihabiskan (detik)
+  timeSpent   Int?
   
   // Foreign Keys
   userId      String
@@ -222,10 +223,45 @@ model TestAttempt {
   // Relations
   userAnswers UserAnswer[]
   
-  @@unique([userId, testId]) // User bisa coba lagi, tapi attempt baru
   @@index([userId])
   @@index([testId])
 }
+
+model Achievement {
+  id          String      @id @default(cuid())
+  name        String      @unique
+  description String      @db.Text
+  icon        String?     // URL icon badge
+  type        AchievementType
+  requirement Int?        // Syarat pencapaian (misal: 5 untuk "5 completed tests")
+  isActive    Boolean     @default(true)
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+  
+  // Relations
+  userAchievements UserAchievement[]
+  
+  @@index([type])
+}
+
+// ⭐ MODEL BARU: User Achievement (Junction table)
+model UserAchievement {
+  id          String      @id @default(cuid())
+  earnedAt    DateTime    @default(now())
+  progress    Int         @default(0) // Progress menuju achievement
+  isCompleted Boolean     @default(false)
+  
+  // Foreign Keys
+  userId          String
+  achievementId   String
+  user            User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  achievement     Achievement @relation(fields: [achievementId], references: [id], onDelete: Cascade)
+  
+  @@unique([userId, achievementId])
+  @@index([userId])
+  @@index([achievementId])
+}
+
 
 // Model jawaban user untuk setiap soal
 model UserAnswer {
@@ -316,4 +352,12 @@ enum NotificationType {
   ACHIEVEMENT     // Pencapaian
   TEST_RESULT     // Hasil test
   NEW_CONTENT     // Konten baru
+}
+
+enum AchievementType {
+  TEST_COMPLETION     // Menyelesaikan X test
+  PERFECT_SCORE       // Mendapat nilai sempurna
+  STREAK              // Berturut-turut
+  LEARNING_HOURS      // Jam belajar
+  CATEGORY_MASTER     // Master kategori tertentu
 }
