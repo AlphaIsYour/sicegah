@@ -22,6 +22,8 @@ model User {
   profileImage    String?
   isActive        Boolean     @default(true)
   emailVerified   DateTime?
+  resetToken      String?     // Token untuk reset password
+  resetTokenExpiry DateTime?  // Waktu expired token
   createdAt       DateTime    @default(now())
   updatedAt       DateTime    @updatedAt
   
@@ -34,6 +36,7 @@ model User {
   
   @@index([email])
   @@index([role])
+  @@index([resetToken])
 }
 
 // Model untuk data anak
